@@ -138,11 +138,17 @@ jobs:
     - export-mac
     runs-on: ubuntu-20.04
     steps:
+    - name: Bump version and push tag
+      uses: laputansoft/github-tag-action@v4.6
+      with:
+        github_token: "${{ secrets.GITHUB_TOKEN }}"
+        tag: 0.0.0-pre
+        default_bump: false
     - uses: softprops/action-gh-release@v2
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: true
-        title: "Development Build"
+        tag: 0.0.0-pre
         files: |
           build/mac/bwgen-nouveau.zip
           build/linux/bwgen-nouveau-x86_64
