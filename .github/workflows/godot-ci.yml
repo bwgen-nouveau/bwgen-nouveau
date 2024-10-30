@@ -148,7 +148,7 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: true
-        tag: 0.0.0-pre
+        tag_name: 0.0.0-pre
         files: |
           build/mac/bwgen-nouveau.zip
           build/linux/bwgen-nouveau-x86_64
