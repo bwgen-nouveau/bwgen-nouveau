@@ -150,17 +150,17 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: mac
-        path: build/mac-bwgen-nouveau.zip
+        path: build
     - name: Download Artifact
       uses: actions/download-artifact@v4
       with:
         name: linux
-        path: build/linux-bwgen-nouveau.x86_64
+        path: build
     - name: Download Artifact
       uses: actions/download-artifact@v4
       with:
         name: windows
-        path: build/win-bwgen-nouveau.exe
+        path: build
     - run: |
         ls -lR
     - uses: softprops/action-gh-release@v2
@@ -169,4 +169,4 @@ jobs:
         prerelease: true
         tag_name: 0.0.0-pre
         files: |
-          build/*/*
+          build/*
