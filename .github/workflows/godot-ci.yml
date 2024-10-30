@@ -139,11 +139,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       uses: softprops/action-gh-release@v2
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: true
-          title: "Development Build"
-          files: |
-            build/mac/bwgen-nouveau.zip
-            build/linux/bwgen-nouveau-x86_64
-            build/windows/bwgen-nouveau.exe
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: true
+        title: "Development Build"
+        files: |
+          build/mac/bwgen-nouveau.zip
+          build/linux/bwgen-nouveau-x86_64
+          build/windows/bwgen-nouveau.exe
