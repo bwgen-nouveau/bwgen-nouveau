@@ -144,7 +144,23 @@ jobs:
         github_token: "${{ secrets.GITHUB_TOKEN }}"
         tag: 0.0.0-pre
         default_bump: false
-
+    - run: |
+        mkdir -p build
+    - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: mac
+        path: build/mac-bwgen-nouveau.zip
+    - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: linux
+        path: build/linux-bwgen-nouveau.x86_64
+    - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: windows
+        path: build/win-bwgen-nouveau.exe
     - run: |
         ls -lR
     - uses: softprops/action-gh-release@v2
