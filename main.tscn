@@ -1,0 +1,178 @@
+[gd_scene load_steps=4 format=3 uid="uid://rb0u54jbx8q4"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_gdcmd"]
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_h3821"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_m0yib"]
+font_size = 24
+
+[node name="Node2D" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gdcmd")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_h3821")
+autoplay = true
+playback_type = 1
+
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 0
+
+[node name="General" type="Panel" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="MainContainerV" type="VBoxContainer" parent="TabContainer/General"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer2" type="MarginContainer" parent="TabContainer/General/MainContainerV"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="TabContainer/General/MainContainerV/MarginContainer2"]
+layout_mode = 2
+text = "BwGen Nouveau"
+label_settings = SubResource("LabelSettings_m0yib")
+horizontal_alignment = 1
+
+[node name="MarginContainer3" type="MarginContainer" parent="TabContainer/General/MainContainerV"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CenterContainer" type="CenterContainer" parent="TabContainer/General/MainContainerV/MarginContainer3"]
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="TabContainer/General/MainContainerV/MarginContainer3/CenterContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+columns = 2
+
+[node name="Label" type="Label" parent="TabContainer/General/MainContainerV/MarginContainer3/CenterContainer/GridContainer"]
+layout_mode = 2
+text = "Base Frequency"
+
+[node name="BaseFreq" type="SpinBox" parent="TabContainer/General/MainContainerV/MarginContainer3/CenterContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 20.0
+max_value = 20000.0
+value = 131.0
+
+[node name="Label2" type="Label" parent="TabContainer/General/MainContainerV/MarginContainer3/CenterContainer/GridContainer"]
+layout_mode = 2
+text = "Target Brainwave Frequency"
+
+[node name="TargetFreq" type="SpinBox" parent="TabContainer/General/MainContainerV/MarginContainer3/CenterContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 1.0
+max_value = 50.0
+value = 10.0
+
+[node name="PlayPauseButton" type="Button" parent="TabContainer/General/MainContainerV"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " Begin Entrainment "
+
+[node name="MarginContainer" type="MarginContainer" parent="TabContainer/General/MainContainerV"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="GridContainer" type="HBoxContainer" parent="TabContainer/General/MainContainerV/MarginContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="Sequencer" type="Panel" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Sequencer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Sequencer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Sequencer"
+
+[node name="AddStep" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " + "
+
+[node name="DeleteStep" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = " - "
+
+[node name="ClearSequence" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " C "
+
+[node name="ItemList" type="ItemList" parent="TabContainer/Sequencer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+item_count = 2
+item_0/text = "Begin at"
+item_1/text = "Transition"
+
+[node name="Button" type="Button" parent="TabContainer/Sequencer/VBoxContainer"]
+layout_mode = 2
+text = "Start Sequence"
+
+[node name="Label" type="Label" parent="TabContainer/Sequencer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Coming Soon"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="pressed" from="TabContainer/General/MainContainerV/PlayPauseButton" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/ClearSequence" to="." method="_on_clear_sequence_pressed"]
+[connection signal="item_clicked" from="TabContainer/Sequencer/VBoxContainer/ItemList" to="." method="_on_item_list_item_clicked"]
+[connection signal="item_selected" from="TabContainer/Sequencer/VBoxContainer/ItemList" to="." method="_on_item_list_item_selected"]
