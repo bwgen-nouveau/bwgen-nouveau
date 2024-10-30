@@ -144,6 +144,9 @@ jobs:
         github_token: "${{ secrets.GITHUB_TOKEN }}"
         tag: 0.0.0-pre
         default_bump: false
+
+    - run: |
+        ls -lR
     - uses: softprops/action-gh-release@v2
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
