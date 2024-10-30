@@ -1,13 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://rb0u54jbx8q4"]
+[gd_scene load_steps=6 format=3 uid="uid://rb0u54jbx8q4"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_gdcmd"]
+[ext_resource type="Script" path="res://formatSpinBox.gd" id="2_pj7av"]
+[ext_resource type="PackedScene" uid="uid://tlyekoss8265" path="res://seqstep.tscn" id="3_1hqg2"]
 
 [sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_h3821"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_m0yib"]
 font_size = 24
 
-[node name="Node2D" type="Control"]
+[node name="MainScene" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -28,9 +30,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-current_tab = 0
+current_tab = 1
 
 [node name="General" type="Panel" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -82,7 +85,10 @@ unique_name_in_owner = true
 layout_mode = 2
 min_value = 20.0
 max_value = 20000.0
-value = 131.0
+step = 0.01
+value = 130.81
+script = ExtResource("2_pj7av")
+format_string = "%.2f"
 
 [node name="Label2" type="Label" parent="TabContainer/General/MainContainerV/MarginContainer3/CenterContainer/GridContainer"]
 layout_mode = 2
@@ -93,7 +99,10 @@ unique_name_in_owner = true
 layout_mode = 2
 min_value = 1.0
 max_value = 50.0
+step = 0.01
 value = 10.0
+script = ExtResource("2_pj7av")
+format_string = "%.2f"
 
 [node name="PlayPauseButton" type="Button" parent="TabContainer/General/MainContainerV"]
 unique_name_in_owner = true
@@ -112,12 +121,10 @@ layout_mode = 2
 alignment = 2
 
 [node name="Sequencer" type="Panel" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Sequencer"]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -133,35 +140,56 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Sequencer"
 
+[node name="EditStep" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Edit Sequence Item"
+disabled = true
+text = " E "
+
 [node name="AddStep" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+tooltip_text = "Add Sequence Item at end of list"
 text = " + "
 
 [node name="DeleteStep" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+tooltip_text = "Delete selected Sequence Item"
 disabled = true
 text = " - "
 
 [node name="ClearSequence" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+tooltip_text = "Clear all Sequence Items"
 text = " C "
 
-[node name="ItemList" type="ItemList" parent="TabContainer/Sequencer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="TabContainer/Sequencer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ItemList" type="ItemList" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 item_count = 2
 item_0/text = "Begin at"
 item_1/text = "Transition"
 
-[node name="Button" type="Button" parent="TabContainer/Sequencer/VBoxContainer"]
+[node name="Properties" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer2" instance=ExtResource("3_1hqg2")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="ProcessBtn" type="Button" parent="TabContainer/Sequencer/VBoxContainer"]
 layout_mode = 2
 text = "Start Sequence"
 
 [node name="Label" type="Label" parent="TabContainer/Sequencer"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -173,6 +201,11 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [connection signal="pressed" from="TabContainer/General/MainContainerV/PlayPauseButton" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/EditStep" to="." method="_on_edit_step_pressed"]
+[connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/AddStep" to="." method="_on_add_step_pressed"]
 [connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/ClearSequence" to="." method="_on_clear_sequence_pressed"]
-[connection signal="item_clicked" from="TabContainer/Sequencer/VBoxContainer/ItemList" to="." method="_on_item_list_item_clicked"]
-[connection signal="item_selected" from="TabContainer/Sequencer/VBoxContainer/ItemList" to="." method="_on_item_list_item_selected"]
+[connection signal="item_clicked" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer2/ItemList" to="." method="_on_item_list_item_clicked"]
+[connection signal="item_selected" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer2/ItemList" to="." method="_on_item_list_item_selected"]
+[connection signal="close_no_save" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer2/Properties" to="." method="_on_properties_close_no_save"]
+[connection signal="step_added" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer2/Properties" to="." method="_on_properties_step_added"]
+[connection signal="step_saved" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer2/Properties" to="." method="_on_properties_step_saved"]
