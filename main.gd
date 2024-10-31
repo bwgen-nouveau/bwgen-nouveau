@@ -15,6 +15,7 @@ func sequenceToBaseFreq(s: int) -> float:
 	var secondsPast = 0
 	var lastFreq = $"%BaseFreq".value
 	for key in Sequence:
+		print("Processing step "+str(key))
 		if Sequence[key].newBaseFreq > 0:
 			lastFreq = Sequence[key].newBaseFreq
 		secondsPast += Sequence[key].timeDurationSec
@@ -28,6 +29,27 @@ func sequenceToBaseFreq(s: int) -> float:
 				return lastFreq + (secondsIn * perSecond)
 			else:
 				print("new tone direct")
+				return lastFreq
+	return 0.0
+
+func sequenceToTargetFreq(s: int) -> float:
+	var secondsPast = 0
+	var lastFreq = $"%TargetFreq".value
+	for key in Sequence:
+		print("Processing step "+str(key))
+		if Sequence[key].newTargetFreq > 0:
+			lastFreq = Sequence[key].newTargetFreq
+		secondsPast += Sequence[key].timeDurationSec
+		if secondsPast > s:
+			# secondsPast is now beyond the correct block
+			if Sequence[key].isTransition:
+				print("Transitioning to new difference")
+				var perSecond = (Sequence[key+1].newTargetFreq-lastFreq)/Sequence[key].timeDurationSec
+				print("Hz/sec in step: "+str(perSecond))
+				var secondsIn = s-(secondsPast - Sequence[key].timeDurationSec)
+				return lastFreq + (secondsIn * perSecond)
+			else:
+				print("new difference direct")
 				return lastFreq
 	return 0.0
 
@@ -98,10 +120,20 @@ func _entry_as_text(entry) -> String:
 		return "Transition for "+Time.get_time_string_from_unix_time(entry.timeDurationSec)+" to next step"
 	else:
 		return "Base frequency "+str(entry.newBaseFreq)+"hz/"+str(entry.newTargetFreq)+"hz - duration "+Time.get_time_string_from_unix_time(entry.timeDurationSec)
-	
+
+func _sort_sequence() -> void:
+	var Sorted : Dictionary = {}
+	var sortkey = 0
+	for _key in Sequence:
+		Sorted.get_or_add(sortkey,Sequence[sortkey])
+		sortkey += 1
+	Sequence = Sorted
+
 func _update_sequence(id: int, entry: SequenceEntry) -> void:
+	Sequence.erase(id)
 	Sequence.get_or_add(id, entry)
 	$"%ItemList".set_item_text(id, _entry_as_text(entry))
+	_sort_sequence()
 	
 func _on_clear_sequence_pressed() -> void:
 	_clear_sequence()
@@ -153,11 +185,13 @@ func _on_properties_step_saved() -> void:
 			NewEntry.newTargetFreq = $"%Properties".targetfreq
 			NewEntry.timeDurationSec = $"%Properties".duration
 		_update_sequence(selectedEntryIndex,NewEntry)
+		selectedEntry = NewEntry
 	$"%Properties".hide()
 
 func _on_timer_timeout() -> void:
 	currentSequenceSecond += 1
 	$"%BaseFreq".value = sequenceToBaseFreq(currentSequenceSecond)
+	$"%TargetFreq".value = sequenceToTargetFreq(currentSequenceSecond)
 	print("Current second of sequence: "+str(currentSequenceSecond))
 
 
@@ -189,16 +223,16 @@ func _on_load_dialog_confirmed() -> void:
 	file.close()
 	Sequence = {}
 	$"%ItemList".clear()
-	#JSONSerialization.parse_into(Sequence,content)
 	var parser = JSON.new()
 	var result = parser.parse(content)
 	if result == OK:
 		for key in parser.data:
 			var entry = SequenceEntry.from_dict(parser.data[key])
-			Sequence.get_or_add(key,entry)
-	#for key in result.result:
-		#print(result.result[key])
-	#Sequence = par.parse(content) as Dictionary
+			var actualKey = int(key)
+			if actualKey == 0 and not key == "0":
+				actualKey = key
+			Sequence.get_or_add(actualKey,entry)
+	_sort_sequence()
 	for key in Sequence:
 		$"%ItemList".add_item(_entry_as_text(Sequence[key]))
-	#print(Sequence)
+	print(Sequence)
