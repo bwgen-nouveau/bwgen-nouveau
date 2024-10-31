@@ -4,16 +4,32 @@ var playback: AudioStreamPlayback = null # Actual playback stream, assigned in _
 var phase_left = 0.0
 var phase_right = 0.0
 var paused = true
-var selectedEntry : SequenceEntry
+var selectedEntry := preload("res://SequenceEntry.gd").new()
 var selectedEntryIndex = 0
-
-class SequenceEntry:
-	var timeDurationSec: int
-	var isTransition: bool
-	var newBaseFreq: float
-	var newTargetFreq: float
 	
-var Sequence = {}
+var Sequence : = {}
+var currentSequenceSecond = 0
+var startSequenceSecond = 0
+
+func sequenceToBaseFreq(s: int) -> float:
+	var secondsPast = 0
+	var lastFreq = $"%BaseFreq".value
+	for key in Sequence:
+		if Sequence[key].newBaseFreq > 0:
+			lastFreq = Sequence[key].newBaseFreq
+		secondsPast += Sequence[key].timeDurationSec
+		if secondsPast > s:
+			# secondsPast is now beyond the correct block
+			if Sequence[key].isTransition:
+				print("Transitioning to new tone")
+				var perSecond = (Sequence[key+1].newBaseFreq-lastFreq)/Sequence[key].timeDurationSec
+				print("Hz/sec in step: "+str(perSecond))
+				var secondsIn = s-(secondsPast - Sequence[key].timeDurationSec)
+				return lastFreq + (secondsIn * perSecond)
+			else:
+				print("new tone direct")
+				return lastFreq
+	return 0.0
 
 func _fill_audio_buffer():
 	if not paused:
@@ -99,7 +115,10 @@ func _on_edit_step_pressed() -> void:
 	$"%Properties".show()
 
 func _on_process_btn_pressed() -> void:
-	OS.alert("This feature is not yet ready")
+	startSequenceSecond = Time.get_unix_time_from_system()
+	if paused:
+		_on_button_pressed()
+	$Timer.start()
 
 func _on_properties_step_added() -> void:
 	var NewEntry= SequenceEntry.new()
@@ -135,3 +154,51 @@ func _on_properties_step_saved() -> void:
 			NewEntry.timeDurationSec = $"%Properties".duration
 		_update_sequence(selectedEntryIndex,NewEntry)
 	$"%Properties".hide()
+
+func _on_timer_timeout() -> void:
+	currentSequenceSecond += 1
+	$"%BaseFreq".value = sequenceToBaseFreq(currentSequenceSecond)
+	print("Current second of sequence: "+str(currentSequenceSecond))
+
+
+func _on_save_button_pressed() -> void:
+	$SaveDialog.size.x = get_window().size.x / 3 * 2
+	$SaveDialog.size.y = get_window().size.y / 3 * 2
+	$SaveDialog.position.x = (get_window().size.x / 2) - ($SaveDialog.size.x / 2)
+	$SaveDialog.position.y = (get_window().size.y / 2) - ($SaveDialog.size.y / 2)
+	$SaveDialog.show()
+
+func _on_file_dialog_confirmed() -> void:
+	var serialised =  preload("res://Sequence.gd").new()
+	serialised.items = Sequence
+	var data = serialised._to_string()
+	var file = FileAccess.open($SaveDialog.current_file, FileAccess.WRITE)
+	file.store_string(data)
+	file.close()
+
+func _on_load_button_pressed() -> void:
+	$LoadDialog.size.x = get_window().size.x / 3 * 2
+	$LoadDialog.size.y = get_window().size.y / 3 * 2
+	$LoadDialog.position.x = (get_window().size.x / 2) - ($LoadDialog.size.x / 2)
+	$LoadDialog.position.y = (get_window().size.y / 2) - ($LoadDialog.size.y / 2)
+	$LoadDialog.show()
+
+func _on_load_dialog_confirmed() -> void:
+	var file = FileAccess.open($LoadDialog.current_file, FileAccess.READ)
+	var content = file.get_as_text()
+	file.close()
+	Sequence = {}
+	$"%ItemList".clear()
+	#JSONSerialization.parse_into(Sequence,content)
+	var parser = JSON.new()
+	var result = parser.parse(content)
+	if result == OK:
+		for key in parser.data:
+			var entry = SequenceEntry.from_dict(parser.data[key])
+			Sequence.get_or_add(key,entry)
+	#for key in result.result:
+		#print(result.result[key])
+	#Sequence = par.parse(content) as Dictionary
+	for key in Sequence:
+		$"%ItemList".add_item(_entry_as_text(Sequence[key]))
+	#print(Sequence)

@@ -135,6 +135,14 @@ grow_vertical = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Sequencer/VBoxContainer"]
 layout_mode = 2
 
+[node name="SaveButton" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "S"
+
+[node name="LoadButton" type="Button" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "L"
+
 [node name="Label" type="Label" parent="TabContainer/Sequencer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -200,7 +208,27 @@ text = "Coming Soon"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Timer" type="Timer" parent="."]
+
+[node name="SaveDialog" type="FileDialog" parent="."]
+initial_position = 4
+size = Vector2i(303, 180)
+access = 2
+filters = PackedStringArray("*.json;JSON data file")
+
+[node name="LoadDialog" type="FileDialog" parent="."]
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 4
+size = Vector2i(303, 180)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.json;JSON data file")
+
 [connection signal="pressed" from="TabContainer/General/MainContainerV/PlayPauseButton" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/LoadButton" to="." method="_on_load_button_pressed"]
 [connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/EditStep" to="." method="_on_edit_step_pressed"]
 [connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/AddStep" to="." method="_on_add_step_pressed"]
 [connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer/ClearSequence" to="." method="_on_clear_sequence_pressed"]
@@ -209,3 +237,7 @@ vertical_alignment = 1
 [connection signal="close_no_save" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer2/Properties" to="." method="_on_properties_close_no_save"]
 [connection signal="step_added" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer2/Properties" to="." method="_on_properties_step_added"]
 [connection signal="step_saved" from="TabContainer/Sequencer/VBoxContainer/HBoxContainer2/Properties" to="." method="_on_properties_step_saved"]
+[connection signal="pressed" from="TabContainer/Sequencer/VBoxContainer/ProcessBtn" to="." method="_on_process_btn_pressed"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="confirmed" from="SaveDialog" to="." method="_on_file_dialog_confirmed"]
+[connection signal="confirmed" from="LoadDialog" to="." method="_on_load_dialog_confirmed"]
