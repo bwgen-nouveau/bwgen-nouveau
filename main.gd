@@ -49,7 +49,6 @@ func _on_button_pressed() -> void:
 	else:
 		$"%PlayPauseButton".text = "Pause Entrainment"
 
-
 func _on_item_list_item_selected(index: int) -> void:
 	if index == 0:
 		$"%DeleteStep".disabled = true
@@ -75,9 +74,7 @@ func _clear_sequence() -> void:
 	$"%EditStep".disabled = true
 	
 func _add_to_sequence(entry: SequenceEntry) -> void:
-	print(Sequence)
 	_update_sequence(len(Sequence), entry)
-	print(Sequence)
 	$"%ItemList".add_item(_entry_as_text(entry))
 	
 func _entry_as_text(entry) -> String:
@@ -94,10 +91,8 @@ func _on_clear_sequence_pressed() -> void:
 	_clear_sequence()
 	pass # Replace with function body.
 
-
 func _on_add_step_pressed() -> void:
 	$"%Properties".show()
-
 
 func _on_edit_step_pressed() -> void:
 	$"%Properties".setup_edit(selectedEntry.timeDurationSec,selectedEntry.isTransition,selectedEntry.newBaseFreq,selectedEntry.newTargetFreq)
@@ -106,10 +101,8 @@ func _on_edit_step_pressed() -> void:
 func _on_process_btn_pressed() -> void:
 	OS.alert("This feature is not yet ready")
 
-
 func _on_properties_step_added() -> void:
 	var NewEntry= SequenceEntry.new()
-	print("In step_added")
 	if $"%Properties".is_finished:
 		if $"%Properties".is_transition:
 			NewEntry.isTransition = true
@@ -119,12 +112,11 @@ func _on_properties_step_added() -> void:
 			NewEntry.newBaseFreq = $"%Properties".basefreq
 			NewEntry.newTargetFreq = $"%Properties".targetfreq
 			NewEntry.timeDurationSec = $"%Properties".duration
-		print("adding")
+		
 		_add_to_sequence(NewEntry)
-		print("added")
+		
 		selectedEntry = NewEntry
 		selectedEntryIndex = len(Sequence)
-	
 	$"%Properties".hide()
 
 func _on_properties_close_no_save() -> void:
@@ -141,7 +133,5 @@ func _on_properties_step_saved() -> void:
 			NewEntry.newBaseFreq = $"%Properties".basefreq
 			NewEntry.newTargetFreq = $"%Properties".targetfreq
 			NewEntry.timeDurationSec = $"%Properties".duration
-			print("Updating "+str(selectedEntryIndex)+" to "+str(NewEntry))
 		_update_sequence(selectedEntryIndex,NewEntry)
-	
 	$"%Properties".hide()
